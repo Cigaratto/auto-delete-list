@@ -60,9 +60,9 @@ export default function Home() {
   };
 
   return (
-    <div className="grid grid-cols-3 w-100 h-screen gap-4 p-4 my-4">
+    <div className="h-screen grid grid-cols-3 w-full gap-4 p-4">
       {/* List */}
-      <div className="flex flex-col gap-4">
+      <div className="h-full border-2 px-4 py-4 rounded-lg border-black border-solid overflow-y-auto flex flex-col gap-4">
         {items.map((item, index) => (
           <div
             key={index}
@@ -75,7 +75,7 @@ export default function Home() {
       </div>
 
       {/* Fruit Column */}
-      <div className="h-100 border-2 border-solid rounded-lg border-black">
+      <div className="border-2 h-full overflow-y-auto border-solid rounded-lg border-black">
         <div className="text-center font-semibold py-4 rounded-lg bg-orange-300 mb-4">
           Fruit
         </div>
@@ -91,7 +91,7 @@ export default function Home() {
       </div>
 
       {/* Vegetable Column */}
-      <div className="h-100 border-2 border-solid rounded-lg border-black">
+      <div className="border-2 h-full overflow-y-auto border-solid rounded-lg border-black">
         <div className="text-center py-4 font-semibold rounded-lg bg-green-300 mb-4">
           Vegetable
         </div>
