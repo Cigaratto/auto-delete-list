@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface ObjectType {
   type: "Fruit" | "Vegetable";
@@ -26,35 +26,51 @@ export default function Home() {
   const [movedItems, setMovedItems] = useState<{
     Fruit: ObjectType[];
     Vegetable: ObjectType[];
-  }>({ Fruit: [], Vegetable: [] });
+  }>({
+    Fruit: [],
+    Vegetable: [],
+  });
+
+  // Use ref to store timeout for each item
+  const timeoutRefs = useRef<{ [key: string]: NodeJS.Timeout }>({});
 
   useEffect(() => {
     setItems(initialData);
   }, []);
 
   const handleClick = (item: ObjectType) => {
+    // Clear existing timeout if any (prevents duplicate items)
+    if (timeoutRefs.current[item.name]) {
+      clearTimeout(timeoutRefs.current[item.name]);
+    }
     // Move item to the corresponding type block
     setItems((prevItems) => prevItems.filter((block) => block !== item));
-    setMovedItems((preMoved) => ({
-      ...preMoved,
-      [item.type]: [...preMoved[item.type], item],
+    setMovedItems((prevMoved) => ({
+      ...prevMoved,
+      [item.type]: [...prevMoved[item.type], item],
     }));
 
-    // Set a timer to move the item back to the main list after 5 seconds
-    setTimeout(() => {
-      setMovedItems((preMoved) => ({
-        ...preMoved,
-        [item.type]: preMoved[item.type].filter((block) => block !== item),
+    // Set timeout to move the item back to the main list after 5 seconds
+    timeoutRefs.current[item.name] = setTimeout(() => {
+      setMovedItems((prevMoved) => ({
+        ...prevMoved,
+        [item.type]: prevMoved[item.type].filter((block) => block !== item),
       }));
       setItems((prevItems) => [...prevItems, item]);
+      delete timeoutRefs.current[item.name];
     }, 5000);
   };
 
-  // Move the item back to the list immediately when clicked in the columns
   const handleReturn = (item: ObjectType) => {
-    setMovedItems((preMoved) => ({
-      ...preMoved,
-      [item.type]: preMoved[item.type].filter((block) => block !== item),
+    // Clear timeout if it is still running
+    if (timeoutRefs.current[item.name]) {
+      clearTimeout(timeoutRefs.current[item.name]);
+      delete timeoutRefs.current[item.name];
+    }
+    // Move the item back to the list immediately when clicked in the columns
+    setMovedItems((prevMoved) => ({
+      ...prevMoved,
+      [item.type]: prevMoved[item.type].filter((block) => block !== item),
     }));
     setItems((prevItems) => [...prevItems, item]);
   };
